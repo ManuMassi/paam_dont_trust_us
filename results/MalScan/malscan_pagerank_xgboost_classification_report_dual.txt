@@ -17,3 +17,9 @@ TEST REPORT
     accuracy                           0.87      4444
    macro avg       0.86      0.87      0.87      4444
 weighted avg       0.87      0.87      0.87      4444
+
+
+=== Dual Threshold Selection on VAL ===
+thr_malware = 0.151061  [floor_unmet_argmax_fallback]  P=0.860  R=0.794  F1=0.826
+thr_benign  = 0.050371  [floor_unmet_argmax_fallback]  P=0.848  R=0.791  F1=0.819
+Deferral on VAL: 634/8772 = 0.072  (gap: 0.100690, min_gap=0.100000)
