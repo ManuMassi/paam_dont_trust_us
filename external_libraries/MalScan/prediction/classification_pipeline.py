@@ -298,21 +298,21 @@ if __name__ == "__main__":
         X_test, y_test, year_test, sha_test = load_features(df, test_samples)
         print(f"Loaded {len(X_test)} testing features")
         # default threshold of 0.5
-        # xgboost(
-        #     X_train, y_train, X_val, y_val, X_test, y_test, sha_test, typ, threshold=0.5
-        # )
-        # # threshold selected based on validation set f1 score
-        # xgboost(
-        #     X_train,
-        #     y_train,
-        #     X_val,
-        #     y_val,
-        #     X_test,
-        #     y_test,
-        #     sha_test,
-        #     typ,
-        #     threshold=None,
-        # )
+        xgboost(
+            X_train, y_train, X_val, y_val, X_test, y_test, sha_test, typ, threshold=0.5
+        )
+        # threshold selected based on validation set f1 score
+        xgboost(
+            X_train,
+            y_train,
+            X_val,
+            y_val,
+            X_test,
+            y_test,
+            sha_test,
+            typ,
+            threshold=None,
+        )
         # two thresholds selected based on validation set f1 score for both classes
         xgboost(
             X_train,
