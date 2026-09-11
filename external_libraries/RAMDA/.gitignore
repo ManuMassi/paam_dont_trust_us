@@ -1,1 +1,6 @@
 prediction/logs
+prediction/models
+prediction/__pycache__
+prediction/*/__pycache__
+prediction/*/*/__pycache__
+
