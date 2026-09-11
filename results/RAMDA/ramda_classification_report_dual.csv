@@ -1,0 +1,31 @@
+VALIDATION REPORT
+              precision    recall  f1-score   support
+
+         0.0       0.86      0.06      0.12      4493
+         1.0       0.50      0.99      0.66      4204
+
+    accuracy                           0.51      8697
+   macro avg       0.68      0.53      0.39      8697
+weighted avg       0.68      0.51      0.38      8697
+
+TEST REPORT
+              precision    recall  f1-score   support
+
+         0.0       0.87      0.08      0.14      2693
+         1.0       0.45      0.99      0.61      2040
+
+    accuracy                           0.47      4733
+   macro avg       0.66      0.53      0.38      4733
+weighted avg       0.69      0.47      0.34      4733
+
+=== Dual Threshold Selection on VAL ===
+thr_malware = 0.038823  [floor_unmet_argmax_fallback]  P=0.494  R=0.963  F1=0.653
+thr_benign  = 9.399740  [floor_unmet_argmax_fallback]  P=0.570  R=0.918  F1=0.704
+Deferral on VAL: 0/8723 = 0.000  (gap: -9.360918, min_gap=0.100000)
+
+=== Dual Threshold Selection on VAL ===
+thr_malware = 0.151169  [floor_unmet_argmax_fallback]  P=0.816  R=0.738  F1=0.775
+thr_benign  = 0.050084  [floor_unmet_argmax_fallback]  P=0.785  R=0.801  F1=0.793
+Deferral on VAL: 310/8723 = 0.036  (gap: 0.101085, min_gap=0.100000)
+Deferred on validation: 26/8723 (0.30%)
+Deferred on test: 16/4749 (0.34%)

@@ -3,6 +3,7 @@
 """
 This file defines the FD_VAE.
 """
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,16 +14,21 @@ from logging import Logger
 from dataset import RAMDADataset
 from .helper import get_device, adjust_learning_rate, eval_metrics
 
+
 class FD_VAE(nn.Module):
-    def __init__(self, in_channels: int, hidden_channels: int, out_channels: int, dropout_ratio: float = 0.1, predefined_loss: float = 20):
+    def __init__(
+        self,
+        in_channels: int,
+        hidden_channels: int,
+        out_channels: int,
+        dropout_ratio: float = 0.1,
+    ):
         super(FD_VAE, self).__init__()
         """
         Encoder and Decoder share same hidden channels
         Decoreder's input channels is equal to encoder's output channels
         Decoder's output channels is equal to encoder's input channels
         """
-
-        self.predefined_loss = predefined_loss
 
         # Gaussian MLP Encoder
         self.gaussian_mlp_encoder = nn.Sequential(
@@ -32,7 +38,7 @@ class FD_VAE(nn.Module):
             nn.Linear(hidden_channels, hidden_channels),
             nn.Tanh(),
             nn.Dropout(dropout_ratio),
-            nn.Linear(hidden_channels, out_channels * 2)
+            nn.Linear(hidden_channels, out_channels * 2),
         )
 
         # Bernoulli MLP Decoder
@@ -44,7 +50,7 @@ class FD_VAE(nn.Module):
             nn.ELU(),
             nn.Dropout(dropout_ratio),
             nn.Linear(hidden_channels, in_channels),
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
         # Initialize the weights
@@ -52,7 +58,7 @@ class FD_VAE(nn.Module):
             if isinstance(m, nn.Linear):
                 nn.init.xavier_uniform_(m.weight)
                 nn.init.zeros_(m.bias)
-    
+
     def reparameterise(self, mu, logvar):
         stddev = 1e-6 + F.softplus(logvar)
         # reparameterization trick
@@ -61,7 +67,7 @@ class FD_VAE(nn.Module):
         z = mu + eps * stddev
 
         return mu, stddev, z
-    
+
     def predict(self, x):
         mu, logvar = self.gaussian_mlp_encoder(x).chunk(2, dim=1)
         mu, logvar, z = self.reparameterise(mu, logvar)
@@ -71,7 +77,9 @@ class FD_VAE(nn.Module):
         y = torch.clamp(y, 1e-8, 1 - 1e-8)
 
         # predict the label (negation)
-        marginal_likelihood = -torch.sum(x * torch.log(y+1e-8) + (1 - x) * torch.log(1 - y + 1e-8), dim=1)
+        marginal_likelihood = -torch.sum(
+            x * torch.log(y + 1e-8) + (1 - x) * torch.log(1 - y + 1e-8), dim=1
+        )
         y_pred = marginal_likelihood > self.predefined_loss
         return y_pred
 
@@ -84,23 +92,29 @@ class FD_VAE(nn.Module):
         y = torch.clamp(y, 1e-8, 1 - 1e-8)
 
         return y, mu, logvar
-    
+
     def get_encoder_output(self, x):
         mu, logvar = self.gaussian_mlp_encoder(x).chunk(2, dim=1)
         mu, logvar, z = self.reparameterise(mu, logvar)
 
         return mu, logvar, z
 
+
 def get_vae_loss(y, x, mu, logvar):
     # Reconstruction loss
-    marginal_likelihood = torch.sum(x * torch.log(y+1e-8) + (1 - x) * torch.log(1 - y + 1e-8), dim=1)
+    marginal_likelihood = torch.sum(
+        x * torch.log(y + 1e-8) + (1 - x) * torch.log(1 - y + 1e-8), dim=1
+    )
     # marginal_likelihood = torch.mean(marginal_likelihood)
 
     # KL Divergence
-    kl_divergence = 0.5 * torch.sum(mu**2 + logvar**2 - torch.log(1e-8 + logvar**2) - 1, dim=1)
+    kl_divergence = 0.5 * torch.sum(
+        mu**2 + logvar**2 - torch.log(1e-8 + logvar**2) - 1, dim=1
+    )
     # kl_divergence = torch.mean(kl_divergence)
 
     return marginal_likelihood, kl_divergence
+
 
 def get_disentagle_loss(mu_i, mu_j, y_i, y_j):
     # Disentagle loss
@@ -110,29 +124,40 @@ def get_disentagle_loss(mu_i, mu_j, y_i, y_j):
     loss_bac = 60 * vector_y
 
     loss_0 = torch.mean(torch.multiply(vector_mu, 1 - vector_y))
-    loss_1 = torch.mean(torch.multiply(torch.abs(F.relu(loss_bac-vector_mu)), vector_y))
+    loss_1 = torch.mean(
+        torch.multiply(torch.abs(F.relu(loss_bac - vector_mu)), vector_y)
+    )
 
     disentagle_loss = loss_0 + loss_1
 
     return disentagle_loss
 
-def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, model: FD_VAE, logger: Logger, **kwargs):
+
+def fd_vae_train(
+    model_path,
+    train_data: RAMDADataset,
+    test_data: RAMDADataset,
+    model: FD_VAE,
+    logger: Logger,
+    # predefined_loss,
+    **kwargs,
+):
     """
     Train the model.
     """
-    device_id = kwargs['device_id']
+    device_id = kwargs["device_id"]
     device = get_device(device_id)
     model.to(device)
 
-    epochs = kwargs['epochs']
-    batch_size = kwargs['batch_size']
-    lr = kwargs['lr']
-    lambda_1 = kwargs['lambda_1']
-    lambda_2 = kwargs['lambda_2']
-    lambda_3 = kwargs['lambda_3']
+    epochs = kwargs["epochs"]
+    batch_size = kwargs["batch_size"]
+    lr = kwargs["lr"]
+    lambda_1 = kwargs["lambda_1"]
+    lambda_2 = kwargs["lambda_2"]
+    lambda_3 = kwargs["lambda_3"]
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    
+
     train_benign_data, train_malware_data = train_data.get_data()
     assert len(train_benign_data) == len(train_malware_data)
 
@@ -144,10 +169,10 @@ def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, 
     for epoch in range(epochs):
         # Adjust learning rate
         adjust_learning_rate(optimizer, epoch, lr)
-        total_loss = 0.
-        total_marginal_likelihood = 0.
-        total_kl_divergence = 0.
-        total_disentagle_loss = 0.
+        total_loss = 0.0
+        total_marginal_likelihood = 0.0
+        total_kl_divergence = 0.0
+        total_disentagle_loss = 0.0
         max_loss = np.inf
 
         # Training
@@ -156,30 +181,36 @@ def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, 
         for batch_idx in range(total_batch):
             # Get the data
             offset = (batch_idx * batch_size) % sample_num
-            batch_benign_data = train_benign_data[offset: offset + batch_size]
-            batch_malware_data = train_malware_data[offset: offset + batch_size]
+            batch_benign_data = train_benign_data[offset : offset + batch_size]
+            batch_malware_data = train_malware_data[offset : offset + batch_size]
             batch_input = np.row_stack((batch_benign_data, batch_malware_data))
             np.random.shuffle(batch_input)
 
             # batch_x_hat_data = batch_input[:, :-1]
             # batch_x_hat_label = batch_input[:, -1]
             batch_x_hat_data = batch_input[:, :]
-            batch_x_hat_label = np.concatenate((np.zeros(len(batch_benign_data)), np.ones(len(batch_malware_data))), axis=0)
+            batch_x_hat_label = np.concatenate(
+                (np.zeros(len(batch_benign_data)), np.ones(len(batch_malware_data))),
+                axis=0,
+            )
 
             # Use next batch data to generate paired data for training
             offset = ((batch_idx + 1) * batch_size) % (sample_num - batch_size)
-            batch_benign_data = train_benign_data[offset: offset + batch_size]
-            batch_malware_data = train_malware_data[offset: offset + batch_size]
+            batch_benign_data = train_benign_data[offset : offset + batch_size]
+            batch_malware_data = train_malware_data[offset : offset + batch_size]
             batch_input = np.row_stack((batch_benign_data, batch_malware_data))
             np.random.shuffle(batch_input)
 
             # batch_x_pair_data = batch_input[:, :-1]
             # batch_x_pair_label = batch_input[:, -1]
             batch_x_pair_data = batch_input[:, :]
-            batch_x_pair_label = np.concatenate((np.zeros(len(batch_benign_data)), np.ones(len(batch_malware_data))), axis=0)
+            batch_x_pair_label = np.concatenate(
+                (np.zeros(len(batch_benign_data)), np.ones(len(batch_malware_data))),
+                axis=0,
+            )
 
             # Also select current batch benign data as x input for VAE
-            batch_x_data = train_benign_data[offset: offset + batch_size]
+            batch_x_data = train_benign_data[offset : offset + batch_size]
             batch_x_data = np.row_stack((batch_x_data, batch_x_data))
 
             # batch_x_data = batch_x_data[:, :-1]
@@ -197,14 +228,22 @@ def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, 
             y, mu, logvar = model(batch_x_data)
 
             # Calculate the loss
-            marginal_likelihood, kl_divergence = get_vae_loss(y, batch_x_data, mu, logvar)
+            marginal_likelihood, kl_divergence = get_vae_loss(
+                y, batch_x_data, mu, logvar
+            )
             # Mean
             marginal_likelihood = torch.mean(marginal_likelihood)
             kl_divergence = torch.mean(kl_divergence)
 
-            disentagle_loss = get_disentagle_loss(mu_i, mu_j, batch_x_hat_label, batch_x_pair_label)
-            
-            loss = -lambda_1 * marginal_likelihood + lambda_2 * kl_divergence + lambda_3 * disentagle_loss
+            disentagle_loss = get_disentagle_loss(
+                mu_i, mu_j, batch_x_hat_label, batch_x_pair_label
+            )
+
+            loss = (
+                -lambda_1 * marginal_likelihood
+                + lambda_2 * kl_divergence
+                + lambda_3 * disentagle_loss
+            )
 
             # Backward
             optimizer.zero_grad()
@@ -212,9 +251,9 @@ def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, 
             optimizer.step()
 
             total_loss += loss.item()
-            total_marginal_likelihood += (-lambda_1 * marginal_likelihood.item())
-            total_kl_divergence += (lambda_2 * kl_divergence.item())
-            total_disentagle_loss += (lambda_3 * disentagle_loss.item())
+            total_marginal_likelihood += -lambda_1 * marginal_likelihood.item()
+            total_kl_divergence += lambda_2 * kl_divergence.item()
+            total_disentagle_loss += lambda_3 * disentagle_loss.item()
 
         time_end = time.time()
         mean_loss = total_loss / total_batch
@@ -224,44 +263,71 @@ def fd_vae_train(model_path, train_data: RAMDADataset, test_data: RAMDADataset, 
 
         # Log the training process
         # logger.info('Epoch: %d, Loss: %.4f, Marginal Likelihood: %.4f, KL Divergence: %.4f, Disentagle Loss: %.4f, Time: %.2f' % (epoch, mean_loss, mean_marginal_likelihood, mean_kl_divergence, mean_disentagle_loss, time_end - time_start))
-        print('[FD-VAE] Epoch: %d, Loss: %.4f, Marginal Likelihood: %.4f, KL Divergence: %.4f, Disentagle Loss: %.4f, Time: %.2fs' % (epoch, mean_loss, mean_marginal_likelihood, mean_kl_divergence, mean_disentagle_loss, time_end - time_start))
+        print(
+            "[FD-VAE] Epoch: %d, Loss: %.4f, Marginal Likelihood: %.4f, KL Divergence: %.4f, Disentagle Loss: %.4f, Time: %.2fs"
+            % (
+                epoch,
+                mean_loss,
+                mean_marginal_likelihood,
+                mean_kl_divergence,
+                mean_disentagle_loss,
+                time_end - time_start,
+            )
+        )
         # Save the model
         if mean_loss < max_loss:
             max_loss = mean_loss
             torch.save(model, model_path)
-        
+
         # Evaluate the model
         test_start_time = time.time()
-        ret_test, y_pred, y_labels = fd_vae_evaluate(test_data, model, **kwargs)
+        y_scores = fd_vae_evaluate(
+            test_data, model, **kwargs
+        )
         test_end_time = time.time()
         # logger.debug("[FD-VAE] Testing:\t[accuracy, recall, precision, f1, time]=[{:.4f}, {:.4f}, {:.4f}, {:.4f}, {:.2f}s]".format(ret_test['accuracy'], ret_test['recall'], ret_test['precision'], ret_test['f1'], test_end_time - test_start_time))
-        print("[FD-VAE] Testing:\t[accuracy, recall, precision, f1, time]=[{:.4f}, {:.4f}, {:.4f}, {:.4f}, {:.2f}s]".format(ret_test['accuracy'], ret_test['recall'], ret_test['precision'], ret_test['f1'], test_end_time - test_start_time))
-    
-    return ret_test, y_pred, y_labels
+        # print(
+        #     "[FD-VAE] Testing:\t[accuracy, recall, precision, f1, time]=[{:.4f}, {:.4f}, {:.4f}, {:.4f}, {:.2f}s]".format(
+        #         ret_test["accuracy"],
+        #         ret_test["recall"],
+        #         ret_test["precision"],
+        #         ret_test["f1"],
+        #         test_end_time - test_start_time,
+        #     )
+        # )
 
-def fd_vae_evaluate(test_dataset: RAMDADataset, model: FD_VAE, **kwargs):
+    return y_scores
+
+
+def fd_vae_evaluate(
+    test_dataset: RAMDADataset, model: FD_VAE, **kwargs
+):
     """
     Evaluate the model.
     """
-    device_id = kwargs['device_id']
+    device_id = kwargs["device_id"]
     device = get_device(device_id)
     model.to(device)
 
-    batch_size = kwargs['batch_size']
+    batch_size = kwargs["batch_size"]
 
     test_benign_data, test_malware_data = test_dataset.get_data()
-    print(f"[fd vae evaluate] Loaded {len(test_benign_data)} benign samples and {len(test_malware_data)} malicious samples for testing")
+    print(
+        f"[fd vae evaluate] Loaded {len(test_benign_data)} benign samples and {len(test_malware_data)} malicious samples for testing"
+    )
     all_test_data = np.row_stack((test_benign_data, test_malware_data))
 
     # test_data = all_test_data[:, :-1]
     # test_label = all_test_data[:, -1]
     test_data = all_test_data[:, :]
-    test_label = np.concatenate((np.zeros(len(test_benign_data)), np.ones(len(test_malware_data))), axis=0)
+    test_label = np.concatenate(
+        (np.zeros(len(test_benign_data)), np.ones(len(test_malware_data))), axis=0
+    )
 
     # Batch number of each epoch
     sample_num = len(test_data)
     # Batch number of each epoch
-    
+
     total_batch = sample_num // batch_size
     if sample_num % batch_size:
         total_batch += 1
@@ -270,10 +336,11 @@ def fd_vae_evaluate(test_dataset: RAMDADataset, model: FD_VAE, **kwargs):
     model.eval()
     marginal_likelihoods = []
 
+    y_scores = []
     with torch.no_grad():
         for batch_idx in range(total_batch):
             # Get the data
-            start = (batch_idx * batch_size)
+            start = batch_idx * batch_size
             if start + batch_size > sample_num:
                 end = sample_num
             else:
@@ -290,13 +357,17 @@ def fd_vae_evaluate(test_dataset: RAMDADataset, model: FD_VAE, **kwargs):
             assert marginal_likelihood.shape == (len(batch_data),)
             # Calculate the loss
             marginal_likelihoods.append(-marginal_likelihood)
-    
-    marginal_likelihoods = torch.cat(marginal_likelihoods, dim=0)
-    predefined_loss = kwargs['predefined_loss']
-    y_pred = (marginal_likelihoods > predefined_loss).float().cpu().numpy()
-    print(f"[fd vae evaluate] {len(y_pred)} {len(test_label)}")
-    print(f"Benign samples: {np.sum(test_label == 0)}, Malicious samples: {np.sum(test_label == 1)}")
-    print(f"Predicted benign samples: {np.sum(y_pred == 0)}, Predicted malicious samples: {np.sum(y_pred == 1)}")
-    ret = eval_metrics(test_label, y_pred)
+            y_scores.append(-marginal_likelihood.cpu().numpy())
 
-    return ret, y_pred, test_label
+    # marginal_likelihoods = torch.cat(marginal_likelihoods, dim=0)
+    # y_pred = (marginal_likelihoods > predefined_loss).float().cpu().numpy()
+    # print(f"[fd vae evaluate] {len(y_pred)} {len(test_label)}")
+    # print(
+    #     f"Benign samples: {np.sum(test_label == 0)}, Malicious samples: {np.sum(test_label == 1)}"
+    # )
+    # print(
+    #     f"Predicted benign samples: {np.sum(y_pred == 0)}, Predicted malicious samples: {np.sum(y_pred == 1)}"
+    # )
+    # ret = eval_metrics(test_label, y_pred)
+
+    return y_scores
