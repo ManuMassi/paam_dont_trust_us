@@ -6,8 +6,8 @@ from pathlib import Path
 
 import ray
 
-from feature_extraction.base_feature_extractor import BaseFeatureExtractor
-from feature_extraction.drebin.apk_analyzer import process_apk
+from ..base_feature_extractor import BaseFeatureExtractor
+from .apk_analyzer import process_apk
 
 
 class DREBINFeatureExtractor(BaseFeatureExtractor):

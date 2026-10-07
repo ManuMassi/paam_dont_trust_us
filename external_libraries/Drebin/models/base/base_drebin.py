@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
-from models.base import BaseModel
+from .base_model import BaseModel
 import dill as pkl
-from feature_extraction import DREBINFeatureExtractor
+from ...feature_extraction import DREBINFeatureExtractor
 import logging
 
 

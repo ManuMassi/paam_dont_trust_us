@@ -1,5 +1,5 @@
 from sklearn.utils._array_api import get_namespace
-from models.base import BaseDREBIN
+from ..base import BaseDREBIN
 from sklearn.svm import LinearSVC
 
 
