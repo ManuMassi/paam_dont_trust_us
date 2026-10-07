@@ -109,6 +109,8 @@ if __name__ == "__main__":
 
         detector.fit(X_train + X_val, y_train + y_val)
         test_scores = detector.predict_proba(X_test)[:, 1]
+    elif detector_name == "RAMDA":
+        pass
 
     results_path = Path(__file__).parent.parent / "results" / detector_name
     results_path.mkdir(parents=True, exist_ok=True)
