@@ -1,2 +1,4 @@
-from classification_pipeline import train_and_test
-from dataset import RAMDADataset
+from .classification_pipeline import train, train_and_test
+from .dataset import RAMDADataset
+
+__all__ = ["RAMDADataset", "train", "train_and_test"]

@@ -10,7 +10,7 @@ import time
 import numpy as np
 from sklearn.metrics import classification_report
 
-from dataset import RAMDADataset
+from ...dataset import RAMDADataset
 from logging import Logger
 from .helper import get_device, adjust_learning_rate, eval_metrics
 from .fd_vae import FD_VAE

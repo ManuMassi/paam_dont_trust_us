@@ -1,16 +1,21 @@
-import torch
-from argparse import ArgumentParser
-import sys
 import os
-import pandas as pd
+import sys
+from argparse import ArgumentParser
 from pathlib import Path
-from sklearn.metrics import classification_report, confusion_matrix, f1_score
+
+import pandas as pd
+import torch
 from xgboost.sklearn import XGBClassifier
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from external_libraries import DREBIN
-from utils import load_drebin_features, load_malscan_features
+from external_libraries import DREBIN, train
+from utils import (
+    load_drebin_features,
+    load_malscan_features,
+    load_ramda_features,
+    scores_to_numpy,
+)
 
 
 def get_args():
@@ -110,7 +115,64 @@ if __name__ == "__main__":
         detector.fit(X_train + X_val, y_train + y_val)
         test_scores = detector.predict_proba(X_test)[:, 1]
     elif detector_name == "RAMDA":
-        pass
+
+        (
+            train_data,
+            val_data,
+            test_data,
+            train_val_data,
+            val_info,
+            test_info,
+        ) = load_ramda_features(
+            feature_path,
+            labels,
+            TR_YQ,
+            VAL_YQ,
+            TS_YQ,
+        )
+
+        y_val, yq_val, sha_val = val_info
+        y_test, yq_test, sha_test = test_info
+
+        val_scores = train(
+            train_dataset=train_data,
+            test_dataset=val_data,
+            model_name="ramda_model",
+            model_type="ramda",
+            logger=None,
+            in_channels=379,
+            hidden_channels=600,
+            out_channels=80,
+            num_classes=2,
+            dropout_ratio=0.1,
+            device_id="cuda",
+            epochs=20,
+            batch_size=64,
+            lr=10e-4,
+            lambda_1=10,
+            lambda_2=1,
+            lambda_3=10,
+        )
+
+        test_scores = train(
+            train_dataset=train_val_data,
+            test_dataset=test_data,
+            model_name="ramda_model",
+            model_type="ramda",
+            logger=None,
+            in_channels=379,
+            hidden_channels=600,
+            out_channels=80,
+            num_classes=2,
+            dropout_ratio=0.1,
+            device_id="cuda",
+            epochs=20,
+            batch_size=64,
+            lr=10e-4,
+            lambda_1=10,
+            lambda_2=1,
+            lambda_3=10,
+        )
 
     results_path = Path(__file__).parent.parent / "results" / detector_name
     results_path.mkdir(parents=True, exist_ok=True)

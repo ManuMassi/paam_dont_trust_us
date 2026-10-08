@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 from logging import Logger
-from dataset import RAMDADataset
+from ...dataset import RAMDADataset
 from .helper import get_device, adjust_learning_rate, eval_metrics
 
 

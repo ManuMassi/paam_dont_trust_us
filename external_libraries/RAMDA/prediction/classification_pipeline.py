@@ -6,15 +6,15 @@ from sklearn.metrics import classification_report, confusion_matrix, f1_score
 
 from logging import Logger
 
-from utils.helper import ensure_dir
-from utils.network.helper import eval_metrics
-from utils.network.fd_vae import FD_VAE, fd_vae_train, fd_vae_evaluate
-from utils.network.mu_sigma_mlp import (
+from .utils.helper import ensure_dir
+from .utils.network.helper import eval_metrics
+from .utils.network.fd_vae import FD_VAE, fd_vae_train, fd_vae_evaluate
+from .utils.network.mu_sigma_mlp import (
     MUSIGMA_MLP,
     musigma_mlp_train,
     musigma_mlp_evaluate,
 )
-from dataset import RAMDADataset
+from .dataset import RAMDADataset
 
 import numpy as np
 from itertools import islice

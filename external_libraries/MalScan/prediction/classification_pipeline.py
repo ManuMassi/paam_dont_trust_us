@@ -137,6 +137,11 @@ def stage2(sample, log_path: str = "stage2_samples.txt"):
     return None
 
 
+def save_y(sha, y_pred, y_score, log_path: str = "predictions.csv"):
+    df = pd.DataFrame({"sha256": sha, "y_pred": y_pred, "y_score": y_score})
+    df.to_csv(log_path, index=False, mode="a", header=not Path(log_path).exists())
+
+
 def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, threshold):
 
     clf = XGBClassifier(max_depth=64, random_state=0)
@@ -150,6 +155,15 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, thre
         clf.fit(X_train + X_val, y_train + y_val)
         report_test = classification_report(y_test, y_pred_test)
         cm_test = confusion_matrix(y_test, y_pred_test)
+        y_scores_test = clf.predict_proba(X_test)[:, 1]
+        save_y(
+            sha_test,
+            y_pred_test,
+            y_scores_test,
+            log_path=Path(__file__).parent.parent.parent.parent
+            / "results"
+            / "MalScan" / f"predicions_{threshold}.csv",
+        )
     elif threshold == None:
         y_scores_val = clf.predict_proba(X_val)[:, 1]
 
@@ -177,6 +191,15 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, thre
         y_pred_test = (y_scores_test >= threshold).astype(int)
         report_test = classification_report(y_test, y_pred_test)
         cm_test = confusion_matrix(y_test, y_pred_test)
+
+        save_y(
+            sha_test,
+            y_pred_test,
+            y_scores_test,
+            log_path=Path(__file__).parent.parent.parent.parent
+            / "results"
+            / "MalScan" / f"predicions_{threshold}.csv",
+        )
     elif threshold == "dual":
         y_scores_val = clf.predict_proba(X_val)[:, 1]
         thr_benign, thr_malware = choose_dual_thresholds_on_val(y_val, y_scores_val)
@@ -204,6 +227,7 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, thre
         y_train = y_train + y_val
         clf.fit(X_train, y_train)
 
+        sha_test_decided = []
         y_test_decided = []
         y_pred_decided = []
         scores_decided = []
@@ -215,10 +239,12 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, thre
                 y_test_decided.append(y_test[i])
                 y_pred_decided.append(1)
                 scores_decided.append(score)
+                sha_test_decided.append(sha_test[i])
             elif score <= thr_benign:
                 y_test_decided.append(y_test[i])
                 y_pred_decided.append(0)
                 scores_decided.append(score)
+                sha_test_decided.append(sha_test[i])
             else:
                 stage2(
                     sha_test[i],
@@ -232,6 +258,14 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, sha_test, type, thre
 
         report_test = classification_report(y_test_decided, y_pred_decided)
         cm_test = confusion_matrix(y_test_decided, y_pred_decided)
+        save_y(
+            sha_test_decided,
+            y_pred_decided,
+            scores_decided,
+            log_path=Path(__file__).parent.parent.parent.parent
+            / "results"
+            / "MalScan" / f"predicions_{threshold}.csv",
+        )
 
     # save report to file
     out_dir = Path(__file__).parent.parent.parent.parent / "results" / "MalScan"
