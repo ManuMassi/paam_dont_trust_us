@@ -43,17 +43,18 @@ def get_args():
     return parser.parse_args()
 
 
-def save_scores(path, sha, scores, labels):
-    pd.DataFrame(
-        {
-            "sha": sha,
-            "score": scores,
-            "true_label": labels,
-        }
-    ).to_csv(path, index=False)
+def save_scores(path, sha, labels, **scores):
+    data = {
+        "sha": sha,
+        **scores,
+        "true_label": labels,
+    }
+
+    pd.DataFrame(data).to_csv(path, index=False)
 
 
 if __name__ == "__main__":
+
     RANDOM_SEED = 42
     TR_YQ = ["2024Q1", "2024Q2", "2024Q3", "2024Q4", "2025Q1", "2025Q2"]
     VAL_YQ = ["2025Q3"]
@@ -134,7 +135,7 @@ if __name__ == "__main__":
         y_val, yq_val, sha_val = val_info
         y_test, yq_test, sha_test = test_info
 
-        val_scores = train(
+        val_vae_scores, val_mlp_scores = train(
             train_dataset=train_data,
             test_dataset=val_data,
             model_name="ramda_model",
@@ -148,13 +149,13 @@ if __name__ == "__main__":
             device_id="cuda",
             epochs=20,
             batch_size=64,
-            lr=10e-4,
+            lr=1e-3,
             lambda_1=10,
             lambda_2=1,
             lambda_3=10,
         )
 
-        test_scores = train(
+        test_vae_scores, test_mlp_scores = train(
             train_dataset=train_val_data,
             test_dataset=test_data,
             model_name="ramda_model",
@@ -168,24 +169,48 @@ if __name__ == "__main__":
             device_id="cuda",
             epochs=20,
             batch_size=64,
-            lr=10e-4,
+            lr=1e-3,
             lambda_1=10,
             lambda_2=1,
             lambda_3=10,
         )
 
+        val_vae_scores = scores_to_numpy(val_vae_scores)
+        val_mlp_scores = scores_to_numpy(val_mlp_scores)
+
+        test_vae_scores = scores_to_numpy(test_vae_scores)
+        test_mlp_scores = scores_to_numpy(test_mlp_scores)
+
     results_path = Path(__file__).parent.parent / "results" / detector_name
     results_path.mkdir(parents=True, exist_ok=True)
-    save_scores(
-        results_path / "val_scores.csv",
-        sha_val,
-        val_scores,
-        y_val,
-    )
 
-    save_scores(
-        results_path / "test_scores.csv",
-        sha_test,
-        test_scores,
-        y_test,
-    )
+    if detector_name == "RAMDA":
+        save_scores(
+            results_path / "val_scores.csv",
+            sha_val,
+            y_val,
+            vae_score=val_vae_scores,
+            mlp_score=val_mlp_scores,
+        )
+
+        save_scores(
+            results_path / "test_scores.csv",
+            sha_test,
+            y_test,
+            vae_score=test_vae_scores,
+            mlp_score=test_mlp_scores,
+        )
+    else:
+        save_scores(
+            results_path / "val_scores.csv",
+            sha_val,
+            y_val,
+            score=val_scores,
+        )
+
+        save_scores(
+            results_path / "test_scores.csv",
+            sha_test,
+            y_test,
+            score=test_scores,
+        )

@@ -1,0 +1,163 @@
+Job started on dongiovanni.pralab.local
+Allocated CPUs: 8
+CUDA_VISIBLE_DEVICES=1
+Thu Oct  8 10:43:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 NVL                On  |   00000000:03:01.0 Off |                   On |
+| N/A   54C    P0            274W /  400W |   20561MiB /  95830MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    1   0   0  |           20518MiB / 47488MiB    | 60      0 |  3   0    3    0    3 |
+|                  |               0MiB / 17620MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+|  0    2   0   1  |              44MiB / 47488MiB    | 60      0 |  3   0    3    0    3 |
+|                  |               0MiB / 17620MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0           844308      C   ...cuda-avx2-2.37.0/llama-server      20466MiB |
++-----------------------------------------------------------------------------------------+
+Current working directory: /home/diego-soi/paam_dont_trust_us/src
+Training FD-VAE model...
+[FD-VAE] Epoch: 0, Loss: 366.3737, Marginal Likelihood: 315.2624, KL Divergence: 43.1455, Disentagle Loss: 7.9658, Time: 3.56s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 1, Loss: 195.4291, Marginal Likelihood: 136.0970, KL Divergence: 48.9990, Disentagle Loss: 10.3330, Time: 1.74s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 2, Loss: 154.8243, Marginal Likelihood: 93.5057, KL Divergence: 50.9958, Disentagle Loss: 10.3228, Time: 1.73s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 3, Loss: 137.0804, Marginal Likelihood: 74.1392, KL Divergence: 52.5864, Disentagle Loss: 10.3548, Time: 1.52s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 4, Loss: 126.3107, Marginal Likelihood: 62.6730, KL Divergence: 53.4765, Disentagle Loss: 10.1612, Time: 1.45s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 5, Loss: 120.0853, Marginal Likelihood: 56.0792, KL Divergence: 54.0445, Disentagle Loss: 9.9616, Time: 1.45s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 6, Loss: 114.8068, Marginal Likelihood: 50.8132, KL Divergence: 54.1774, Disentagle Loss: 9.8162, Time: 1.47s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 7, Loss: 111.7056, Marginal Likelihood: 47.7300, KL Divergence: 54.2964, Disentagle Loss: 9.6791, Time: 1.45s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 8, Loss: 109.2630, Marginal Likelihood: 45.0719, KL Divergence: 54.5759, Disentagle Loss: 9.6153, Time: 1.44s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 9, Loss: 108.0798, Marginal Likelihood: 43.6496, KL Divergence: 54.7906, Disentagle Loss: 9.6396, Time: 1.63s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 10, Loss: 94.6666, Marginal Likelihood: 33.7013, KL Divergence: 52.0543, Disentagle Loss: 8.9111, Time: 1.75s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 11, Loss: 92.1236, Marginal Likelihood: 31.7021, KL Divergence: 51.7519, Disentagle Loss: 8.6695, Time: 1.75s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 12, Loss: 91.3959, Marginal Likelihood: 30.8178, KL Divergence: 51.9701, Disentagle Loss: 8.6081, Time: 1.73s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 13, Loss: 90.8945, Marginal Likelihood: 30.2644, KL Divergence: 52.0102, Disentagle Loss: 8.6199, Time: 1.73s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 14, Loss: 90.2250, Marginal Likelihood: 29.7025, KL Divergence: 51.9652, Disentagle Loss: 8.5573, Time: 1.73s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 15, Loss: 89.7533, Marginal Likelihood: 29.2594, KL Divergence: 51.9507, Disentagle Loss: 8.5432, Time: 1.74s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 16, Loss: 89.0789, Marginal Likelihood: 28.6464, KL Divergence: 51.8980, Disentagle Loss: 8.5344, Time: 1.71s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 17, Loss: 88.3021, Marginal Likelihood: 28.0612, KL Divergence: 51.7667, Disentagle Loss: 8.4741, Time: 1.73s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 18, Loss: 87.7284, Marginal Likelihood: 27.5258, KL Divergence: 51.7419, Disentagle Loss: 8.4606, Time: 1.77s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+[FD-VAE] Epoch: 19, Loss: 87.1143, Marginal Likelihood: 26.9873, KL Divergence: 51.7033, Disentagle Loss: 8.4238, Time: 1.74s
+[fd vae evaluate] Loaded 4517 benign samples and 4206 malicious samples for testing
+Training MUSIGMA-MLP model...
+Epoch: 0, Loss: 0.5003, Time: 0.89
+Epoch: 1, Loss: 0.4327, Time: 0.81
+Epoch: 2, Loss: 0.3998, Time: 0.83
+Epoch: 3, Loss: 0.3753, Time: 0.82
+Epoch: 4, Loss: 0.3539, Time: 0.82
+Epoch: 5, Loss: 0.3313, Time: 0.83
+Epoch: 6, Loss: 0.3125, Time: 0.83
+Epoch: 7, Loss: 0.2938, Time: 0.82
+Epoch: 8, Loss: 0.2770, Time: 0.83
+Epoch: 9, Loss: 0.2608, Time: 0.82
+Epoch: 10, Loss: 0.2326, Time: 0.83
+Epoch: 11, Loss: 0.2173, Time: 0.82
+Epoch: 12, Loss: 0.2033, Time: 0.83
+Epoch: 13, Loss: 0.1925, Time: 0.82
+Epoch: 14, Loss: 0.1861, Time: 0.82
+Epoch: 15, Loss: 0.1774, Time: 0.83
+Epoch: 16, Loss: 0.1701, Time: 0.83
+Epoch: 17, Loss: 0.1602, Time: 0.82
+Epoch: 18, Loss: 0.1567, Time: 0.83
+Epoch: 19, Loss: 0.1510, Time: 0.83
+Training FD-VAE model...
+[FD-VAE] Epoch: 0, Loss: 330.6135, Marginal Likelihood: 277.0682, KL Divergence: 44.5942, Disentagle Loss: 8.9512, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 1, Loss: 176.4822, Marginal Likelihood: 115.3704, KL Divergence: 50.3276, Disentagle Loss: 10.7842, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 2, Loss: 145.7102, Marginal Likelihood: 82.2443, KL Divergence: 52.7464, Disentagle Loss: 10.7195, Time: 2.05s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 3, Loss: 128.7431, Marginal Likelihood: 64.7654, KL Divergence: 53.5951, Disentagle Loss: 10.3825, Time: 2.05s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 4, Loss: 119.3912, Marginal Likelihood: 55.3354, KL Divergence: 54.0692, Disentagle Loss: 9.9867, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 5, Loss: 115.6818, Marginal Likelihood: 51.0813, KL Divergence: 54.6961, Disentagle Loss: 9.9045, Time: 2.07s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 6, Loss: 113.1843, Marginal Likelihood: 48.2677, KL Divergence: 55.0511, Disentagle Loss: 9.8654, Time: 2.05s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 7, Loss: 108.6879, Marginal Likelihood: 44.2116, KL Divergence: 54.8213, Disentagle Loss: 9.6550, Time: 2.10s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 8, Loss: 106.3192, Marginal Likelihood: 42.0399, KL Divergence: 54.6833, Disentagle Loss: 9.5960, Time: 2.07s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 9, Loss: 104.5377, Marginal Likelihood: 40.3495, KL Divergence: 54.6616, Disentagle Loss: 9.5265, Time: 2.07s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 10, Loss: 92.6169, Marginal Likelihood: 31.6981, KL Divergence: 52.0285, Disentagle Loss: 8.8903, Time: 2.07s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 11, Loss: 90.6051, Marginal Likelihood: 30.0799, KL Divergence: 51.8673, Disentagle Loss: 8.6579, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 12, Loss: 89.8265, Marginal Likelihood: 29.3462, KL Divergence: 51.8612, Disentagle Loss: 8.6191, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 13, Loss: 89.7562, Marginal Likelihood: 29.1231, KL Divergence: 52.0273, Disentagle Loss: 8.6058, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 14, Loss: 89.0009, Marginal Likelihood: 28.4818, KL Divergence: 51.9474, Disentagle Loss: 8.5717, Time: 2.06s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 15, Loss: 88.1413, Marginal Likelihood: 27.7867, KL Divergence: 51.7965, Disentagle Loss: 8.5580, Time: 2.08s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 16, Loss: 87.8262, Marginal Likelihood: 27.5113, KL Divergence: 51.7817, Disentagle Loss: 8.5332, Time: 2.09s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 17, Loss: 87.3695, Marginal Likelihood: 27.1450, KL Divergence: 51.7307, Disentagle Loss: 8.4937, Time: 2.09s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 18, Loss: 86.7096, Marginal Likelihood: 26.5114, KL Divergence: 51.7188, Disentagle Loss: 8.4794, Time: 1.73s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+[FD-VAE] Epoch: 19, Loss: 86.1843, Marginal Likelihood: 26.0829, KL Divergence: 51.6439, Disentagle Loss: 8.4576, Time: 1.70s
+[fd vae evaluate] Loaded 2704 benign samples and 2045 malicious samples for testing
+Training MUSIGMA-MLP model...
+Epoch: 0, Loss: 0.4969, Time: 0.98
+Epoch: 1, Loss: 0.4277, Time: 0.97
+Epoch: 2, Loss: 0.3973, Time: 0.98
+Epoch: 3, Loss: 0.3717, Time: 0.98
+Epoch: 4, Loss: 0.3476, Time: 0.98
+Epoch: 5, Loss: 0.3281, Time: 0.98
+Epoch: 6, Loss: 0.3082, Time: 0.97
+Epoch: 7, Loss: 0.2878, Time: 0.97
+Epoch: 8, Loss: 0.2709, Time: 0.98
+Epoch: 9, Loss: 0.2548, Time: 0.98
+Epoch: 10, Loss: 0.2290, Time: 0.98
+Epoch: 11, Loss: 0.2146, Time: 0.97
+Epoch: 12, Loss: 0.2032, Time: 0.99
+Epoch: 13, Loss: 0.1950, Time: 0.98
+Epoch: 14, Loss: 0.1844, Time: 0.98
+Epoch: 15, Loss: 0.1771, Time: 0.99
+Epoch: 16, Loss: 0.1686, Time: 0.98
+Epoch: 17, Loss: 0.1625, Time: 0.97
+Epoch: 18, Loss: 0.1561, Time: 0.97
+Epoch: 19, Loss: 0.1499, Time: 1.00
+Job finished
