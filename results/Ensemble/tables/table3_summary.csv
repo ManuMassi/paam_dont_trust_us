@@ -2,6 +2,7 @@ metric,value
 deferred_by_at_least_one_single,705
 deferred_by_at_least_one_single_pct,14.845230574857865
 deferred_by_all_three_singles,3
+deferred_by_all_three_expected_if_independent,0.728171386149453
 deferred_by_fusion,279
 fusion_deferred_where_drebin_and_malscan_both_decide,166
 fusion_deferred_where_drebin_and_malscan_contradict,162
